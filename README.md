@@ -53,8 +53,7 @@ These steps assume you already have a Safe deployed and at least 1 signer with 1
 If you already have a guard set-up in your Safe you will have to remove it. See steps on how to remove a guard [here]().   
 
 1. Identify the factory contract in the chain you want to set this guard.
-2. In the factor contract call method `createGuard`. You will need the address of the Safe, and an array of users to become "super" users.
-3. Once you deploy your guard, you will need to set it as the active guard in your Safe.
-4. Using Safe's transaction builder self call the Safe with method `setGuard(address)`. The address is the guard created in step 2.
-5. Collect the required signatures and execute. Once your transaction is executed only "super" owners will be able to execute changes to the signers of the Safe. 
+2. In the factory contract call method `createGuard`. You will need the address of the Safe, and an array of users to become "super" users.
+3. Once you deploy your guard, you will need to set it as the active guard in your Safe. To do this, use Safe's transaction builder to self-call the Safe's method `setGuard(address)`. The address is the guard created in Step 2.
+4. Collect the required signatures and execute the transaction. Once your transaction is confirmed, only the "super" owners will be able to execute changes to the signers of the Safe.
 
