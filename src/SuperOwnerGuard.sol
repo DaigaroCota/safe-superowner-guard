@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import {GnosisSafe} from "@safe-contracts/GnosisSafe.sol";
 import {Guard} from "@safe-contracts/base/GuardManager.sol";
 import {Enum} from "@safe-contracts/common/Enum.sol";
-import {console} from "forge-std/console.sol";
 
 contract SuperOwnerGuard is Guard {
     /// Events
