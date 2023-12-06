@@ -30,6 +30,12 @@ contract SuperOwnerGuardTest is Test {
     bytes4 internal constant swapOwner = 0xe318b52b;
     // cast sig 'changeThreshold(uint256)'
     bytes4 internal constant changeThreshold = 0x694e80c3;
+    // cast sig 'setSuperOwner(address,bool)'
+
+    // From src/contracts/SuperOwnerGuard.sol
+    bytes4 internal constant setSuperOwner = 0xf282e9ff;
+    // cast sig 'setSuperRestrictedSelector(bytes4,bool)'
+    bytes4 internal constant setSuperRestrictedSelector = 0x2bcf063a;
 
     function setUp() public {
         Alice = vm.createWallet("Alice");
@@ -59,8 +65,10 @@ contract SuperOwnerGuardTest is Test {
         selectors.push(removeOwner);
         selectors.push(swapOwner);
         selectors.push(changeThreshold);
+        selectors.push(setSuperOwner);
+        selectors.push(setSuperRestrictedSelector);
 
-        guard = new SuperOwnerGuard(address(safe), superOwners, selectors);
+        guard = new SuperOwnerGuard(address(safe), superOwners);
 
         bytes memory data = abi.encodeWithSelector(GuardManager.setGuard.selector, address(guard));
 

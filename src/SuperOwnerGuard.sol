@@ -16,25 +16,51 @@ contract SuperOwnerGuard is Guard {
     error SuperOwnerGuard__setSuperRestrictedSelector_emptySelector();
     error SuperOwnerGuard__setSuperOwner_NotSafeOwner();
     error SuperOwnerGuard_checkTransaction_onlyexecutableBySuperOwner();
+    error SuperOwnerGuard_onlySafe();
 
     bytes4 constant ZERO_SELECTOR = 0x000000;
+
+    // From @safe-contracts/contracts/base/OwnerManager.sol
+    // cast sig 'addOwnerWithThreshold(address,uint256)'
+    bytes4 internal constant _addOwnerWithThreshold = 0x0d582f13;
+    // cast sig 'removeOwner(address,address,uint256)'
+    bytes4 internal constant _removeOwner = 0xf8dc5dd9;
+    // cast sig 'swapOwner(address,address,address)'
+    bytes4 internal constant _swapOwner = 0xe318b52b;
+    // cast sig 'changeThreshold(uint256)'
+    bytes4 internal constant _changeThreshold = 0x694e80c3;
+    // cast sig 'setSuperOwner(address,bool)'
+
+    // From src/contracts/SuperOwnerGuard.sol
+    bytes4 internal constant __setSuperOwner = 0xf282e9ff;
+    // cast sig 'setSuperRestrictedSelector(bytes4,bool)'
+    bytes4 internal constant __setSuperRestrictedSelector = 0x2bcf063a;
 
     mapping(address => bool) public isSuperOwner;
     mapping(bytes4 => bool) public superRestrictedSelectors;
 
     GnosisSafe public immutable safe;
 
-    constructor(address safe_, address[] memory superOwners, bytes4[] memory selectors) {
+    modifier onlySafe() {
+        if (msg.sender != address(safe)) {
+            revert SuperOwnerGuard_onlySafe();
+        }
+        _;
+    }
+
+    constructor(address safe_, address[] memory superOwners) {
         _checkZeroAddress(safe_);
         safe = GnosisSafe(payable(safe_));
         uint256 len = superOwners.length;
         for (uint256 i = 0; i < len; i++) {
             _setSuperOwner(superOwners[i], true, GnosisSafe(payable(safe_)));
         }
-        len = selectors.length;
-        for (uint256 i = 0; i < len; i++) {
-            _setSuperRestrictedSelector(selectors[i], true);
-        }
+        superRestrictedSelectors[_addOwnerWithThreshold] = true;
+        superRestrictedSelectors[_removeOwner] = true;
+        superRestrictedSelectors[_swapOwner] = true;
+        superRestrictedSelectors[_changeThreshold] = true;
+        superRestrictedSelectors[__setSuperOwner] = true;
+        superRestrictedSelectors[__setSuperRestrictedSelector] = true;
     }
 
     function checkTransaction(
@@ -60,6 +86,14 @@ contract SuperOwnerGuard is Guard {
      * @dev Unused method
      */
     function checkAfterExecution(bytes32, bool) external override {}
+
+    function setSuperOwner(address owner, bool state) external onlySafe {
+        _setSuperOwner(owner, state, safe);
+    }
+
+    function setSuperRestrictedSelector(bytes4 selector, bool state) external onlySafe {
+        _setSuperRestrictedSelector(selector, state);
+    }
 
     function _setSuperOwner(address owner, bool state, GnosisSafe safe_) internal {
         _checkZeroAddress(owner);
