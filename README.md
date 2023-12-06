@@ -8,19 +8,30 @@ Safe Guards can make checks before and after a Safe transaction. The check befor
 Is intended to grant certain owners of a Safe, special authority to execute certain functions.    
 By default the following functions are restricted to be executed only by "super" users:  
 ``` 
-// From @safe-contracts/contracts/base/OwnerManager.sol
+/*
+ * @dev From @safe-contracts/contracts/base/OwnerManager.sol
+ */
+
 // cast sig 'addOwnerWithThreshold(address,uint256)'
 bytes4 internal constant addOwnerWithThreshold = 0x0d582f13;
+
 // cast sig 'removeOwner(address,address,uint256)'
 bytes4 internal constant removeOwner = 0xf8dc5dd9;
+
 // cast sig 'swapOwner(address,address,address)'
 bytes4 internal constant swapOwner = 0xe318b52b;
+
 // cast sig 'changeThreshold(uint256)'
 bytes4 internal constant changeThreshold = 0x694e80c3;
-// cast sig 'setSuperOwner(address,bool)'
 
-// From src/contracts/SuperOwnerGuard.sol
+/*
+ * @dev From src/contracts/SuperOwnerGuard.sol
+ *
+ */
+
+// cast sig 'setSuperOwner(address,bool)'
 bytes4 internal constant setSuperOwner = 0xf282e9ff;
+
 // cast sig 'setSuperRestrictedSelector(bytes4,bool)'
 bytes4 internal constant setSuperRestrictedSelector = 0x2bcf063a;
 ```
